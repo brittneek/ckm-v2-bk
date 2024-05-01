@@ -18,7 +18,7 @@ var resourceGroupLocation = location
 
 
 var solutionLocation = resourceGroupLocation
-//var baseUrl = 'https://raw.githubusercontent.com/microsoft/Customer-Service-Conversational-Insights-with-Azure-OpenAI-Services/master/'
+var baseUrl = 'https://raw.githubusercontent.com/brittneek/ckm-v2-bk/main/'
 
 
 // ========== Managed Identity ========== //
