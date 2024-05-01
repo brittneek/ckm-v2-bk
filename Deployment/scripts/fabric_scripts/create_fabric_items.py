@@ -3,6 +3,7 @@ import base64
 import json
 import requests
 import pandas as pd
+import os
 
 # credential = DefaultAzureCredential()
 
@@ -29,6 +30,12 @@ lakehouse_data = {
 
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
 
+# DELETE
+current_dir = os.path.dirname(os.path.realpath(__file__))
+print(current_dir)
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+print(current_dir)
 
 notebook_names =['test']
 
