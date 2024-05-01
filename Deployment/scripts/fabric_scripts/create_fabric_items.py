@@ -30,7 +30,7 @@ lakehouse_data = {
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
 
 
-notebook_names =['create_articles_index','create_grants_index','create_drafts_index']
+notebook_names =['test']
 
 for notebook_name in notebook_names:
 
