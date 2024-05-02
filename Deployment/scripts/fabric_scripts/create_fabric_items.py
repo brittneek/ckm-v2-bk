@@ -21,21 +21,21 @@ fabric_headers = {"Authorization": "Bearer " + token.strip()}
 fabric_base_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/"
 fabric_items_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/items/"
 
-lakehouse_name = 'Lakehouse1'
+print("items url")
+print(fabric_items_url)
+
+lakehouse_name = 'Lakehouse2'
 
 lakehouse_data = {
   "displayName": lakehouse_name,
   "type": "Lakehouse"
 }
-
+print("lakehouse data")
+print(lakehouse_data)
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
 
-# DELETE
-current_dir = os.path.dirname(os.path.realpath(__file__))
-print(current_dir)
+print(lakehouse_res)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-print(current_dir)
 
 # notebook_names =['test']
 
