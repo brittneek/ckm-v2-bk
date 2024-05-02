@@ -5,11 +5,11 @@ import requests
 import pandas as pd
 import os
 
-credential = DefaultAzureCredential()
+# credential = DefaultAzureCredential()
 
-# from azure.identity import AzureCliCredential
+from azure.identity import AzureCliCredential
 
-# credential = AzureCliCredential()
+credential = AzureCliCredential()
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
@@ -20,6 +20,7 @@ workspaceId = "workspaceId_to-be-replaced"
 fabric_headers = {"Authorization": "Bearer " + token.strip()}
 fabric_base_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/"
 fabric_items_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/items/"
+
 
 print("items url")
 print(fabric_items_url)
