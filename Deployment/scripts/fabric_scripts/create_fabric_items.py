@@ -5,14 +5,20 @@ import requests
 import pandas as pd
 import os
 
-credential = DefaultAzureCredential()
+# credential = DefaultAzureCredential()
 
-# from azure.identity import AzureCliCredential
+from azure.identity import AzureCliCredential
 
-# credential = AzureCliCredential()
+credential = AzureCliCredential()
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
+
+print("cred")
+if cred is None:
+  print("cred has value")
+
+
 
 
 key_vault_name = 'kv_to-be-replaced'
