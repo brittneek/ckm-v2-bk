@@ -5,14 +5,15 @@ import requests
 import pandas as pd
 import os
 
-# credential = DefaultAzureCredential()
+credential = DefaultAzureCredential()
 
-from azure.identity import AzureCliCredential
+# from azure.identity import AzureCliCredential
 
-credential = AzureCliCredential()
+# credential = AzureCliCredential()
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
+
 
 key_vault_name = 'kv_to-be-replaced'
 workspaceId = "workspaceId_to-be-replaced"
@@ -21,6 +22,18 @@ fabric_headers = {"Authorization": "Bearer " + token.strip()}
 fabric_base_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/"
 fabric_items_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/items/"
 
+fabric_create_workspace_url = f"https://api.fabric.microsoft.com/v1/workspaces"
+
+workspace_name = "ckm-dev01"
+
+workspace_data = {
+  "displayName": workspace_name
+}
+
+workspace_res = requests.post(fabric_create_workspace_url, headers=fabric_headers, json=workspace_data)
+
+print("workspace response")
+print(workspace_res)
 
 print("items url")
 print(fabric_items_url)
@@ -31,6 +44,9 @@ lakehouse_data = {
   "displayName": lakehouse_name,
   "type": "Lakehouse"
 }
+
+
+
 print("lakehouse data")
 print(lakehouse_data)
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
