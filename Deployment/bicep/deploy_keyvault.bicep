@@ -82,10 +82,10 @@ param azureOpenAIEndpoint string
 // param azureSearchArticlesIndex string
 // param azureSearchGrantsIndex string
 // param azureSearchDraftsIndex string
-// param cogServiceEndpoint string
-// @secure()
-// param cogServiceKey string
-// param cogServiceName string
+param cogServiceEndpoint string
+@secure()
+param cogServiceKey string
+param cogServiceName string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: kvName
@@ -280,29 +280,29 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
 // }
 
 
-// resource cogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-//   parent: keyVault
-//   name: 'COG-SERVICES-ENDPOINT'
-//   properties: {
-//     value: cogServiceEndpoint
-//   }
-// }
+resource cogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'COG-SERVICES-ENDPOINT'
+  properties: {
+    value: cogServiceEndpoint
+  }
+}
 
-// resource cogServiceKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-//   parent: keyVault
-//   name: 'COG-SERVICES-KEY'
-//   properties: {
-//     value: cogServiceKey
-//   }
-// }
+resource cogServiceKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'COG-SERVICES-KEY'
+  properties: {
+    value: cogServiceKey
+  }
+}
 
-// resource cogServiceNameEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-//   parent: keyVault
-//   name: 'COG-SERVICES-NAME'
-//   properties: {
-//     value: cogServiceName
-//   }
-// }
+resource cogServiceNameEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyVault
+  name: 'COG-SERVICES-NAME'
+  properties: {
+    value: cogServiceName
+  }
+}
 
 resource azureSubscriptionIdEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault

@@ -1,6 +1,6 @@
 **Run below code to build bicep.json after changes**
 
-az bicep build --file master.bicep
+az bicep build --file main.bicep
 
 
 **Creates Resource group**
