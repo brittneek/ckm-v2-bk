@@ -4,7 +4,7 @@ echo "started the script"
 # Variables
 keyvaultName="$1"
 fabricWorkspaceId="$2"
-solutionName="$2"
+solutionName="$3"
 
 #Replace key vault name and workspace id in the python files
 sed -i "s/kv_to-be-replaced/${keyvaultName}/g" "create_fabric_items.py"
