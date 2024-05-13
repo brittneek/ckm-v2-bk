@@ -6,86 +6,85 @@ import pandas as pd
 import os
 
 # credential = DefaultAzureCredential()
-
 from azure.identity import AzureCliCredential
-
 credential = AzureCliCredential()
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
 
-print("cred")
-if cred is None:
-  print("cred has value")
-
-
+fabric_headers = {"Authorization": "Bearer " + token.strip()}
 
 
 key_vault_name = 'kv_to-be-replaced'
 workspaceId = "workspaceId_to-be-replaced"
+solutionname = "solutionName_to-be-replaced"
+create_workspace = False
 
-fabric_headers = {"Authorization": "Bearer " + token.strip()}
+rapper_notebook_name = 'pipeline_notebook'
+pipeline_name = 'data_pipeline'
+lakehouse_name = 'lakehouse_' + solutionname
+
+
+if create_workspace == True:
+  workspace_name = 'nc_workspace_' + solutionname
+
+  # create workspace
+  ws_url = 'https://api.fabric.microsoft.com/v1/workspaces'
+
+  ws_data = {
+    "displayName": workspace_name
+  }
+  ws_res = requests.post(ws_url, headers=fabric_headers, json=ws_data)
+  ws_details = ws_res.json()
+  # print(ws_details['id'])
+  workspaceId = ws_details['id']
+
+
 fabric_base_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/"
 fabric_items_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/items/"
 
 fabric_create_workspace_url = f"https://api.fabric.microsoft.com/v1/workspaces"
 
-workspace_name = "ckm-dev01"
+#get workspace name
+ws_res = requests.get(fabric_base_url, headers=fabric_headers)
+workspace_name = ws_res.json()['displayName']
 
-workspace_data = {
-  "displayName": workspace_name
-}
 
-workspace_res = requests.post(fabric_create_workspace_url, headers=fabric_headers, json=workspace_data)
-
-print("workspace response")
-print(workspace_res)
-
-print("items url")
-print(fabric_items_url)
-
-lakehouse_name = 'Lakehouse2'
-
+#create lakehouse
 lakehouse_data = {
   "displayName": lakehouse_name,
   "type": "Lakehouse"
 }
-
-
-
-print("lakehouse data")
-print(lakehouse_data)
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
+# lakehouse_res.json()
 
-print(lakehouse_res)
 
+# copy local files to lakehouse
+from azure.storage.filedatalake import (
+    DataLakeServiceClient,
+    DataLakeDirectoryClient,
+    FileSystemClient
+)
 
-# notebook_names =['test']
+account_name = "onelake" #always onelake
+data_path = f"{lakehouse_name}.Lakehouse/Files"
+folder_path = "data"
 
-# for notebook_name in notebook_names:
+account_url = f"https://{account_name}.dfs.fabric.microsoft.com"
+service_client = DataLakeServiceClient(account_url, credential=credential)
 
-#     with open('notebooks/'+ notebook_name +'.ipynb', 'r') as f:
-#         notebook_json = json.load(f)
+#Create a file system client for the workspace
+file_system_client = service_client.get_file_system_client(workspace_name)
 
-#     notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
-#     notebook_json['metadata']['trident']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
-#     notebook_json['metadata']['trident']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
+directory_client = file_system_client.get_directory_client(f"{data_path}/{folder_path}")
 
-#     notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
+local_data_path = '../data'
+file_names = []
+for (dirpath, dirnames, filenames) in os.walk(local_data_path):
+    file_names.extend(filenames)
+    break
 
-#     notebook_data = {
-#         "displayName":notebook_name,
-#         "type":"Notebook",
-#         "definition" : {
-#             "format": "ipynb",
-#             "parts": [
-#                 {
-#                     "path": "notebook-content.ipynb",
-#                     "payload": notebook_base64.decode('utf-8'),
-#                     "payloadType": "InlineBase64"
-#                 }
-#             ]
-#         }
-#     }
-#     fabric_response = requests.post(fabric_items_url, headers=fabric_headers, json=notebook_data)
-    #print(fabric_response.json())    
+for file_name in file_names:
+    file_client = directory_client.get_file_client(file_name)
+    with open(file=os.path.join(local_data_path, file_name), mode="rb") as data:
+        file_client.upload_data(data, overwrite=True)
