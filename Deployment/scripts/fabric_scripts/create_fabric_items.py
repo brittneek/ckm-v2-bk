@@ -95,7 +95,7 @@ notebook_names =['00_process_json_files','03_create_calendar_data','pipeline_not
 
 for notebook_name in notebook_names:
 
-    with open('../Code/'+ notebook_name +'.ipynb', 'r') as f:
+    with open('notebooks/'+ notebook_name +'.ipynb', 'r') as f:
         notebook_json = json.load(f)
 
     # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
