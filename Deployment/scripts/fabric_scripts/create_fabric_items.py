@@ -78,7 +78,7 @@ file_system_client = service_client.get_file_system_client(workspace_name)
 
 directory_client = file_system_client.get_directory_client(f"{data_path}/{folder_path}")
 
-local_data_path = '../data'
+local_data_path = '../../data'
 file_names = []
 for (dirpath, dirnames, filenames) in os.walk(local_data_path):
     file_names.extend(filenames)
