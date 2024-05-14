@@ -15,16 +15,14 @@ token = cred.token
 
 fabric_headers = {"Authorization": "Bearer " + token.strip()}
 
-
 key_vault_name = 'kv_to-be-replaced'
 workspaceId = "workspaceId_to-be-replaced"
 solutionname = "solutionName_to-be-replaced"
 create_workspace = False
 
-rapper_notebook_name = 'pipeline_notebook'
+pipeline_notebook_name = 'pipeline_notebook'
 pipeline_name = 'data_pipeline'
 lakehouse_name = 'lakehouse_' + solutionname
-
 
 if create_workspace == True:
   workspace_name = 'nc_workspace_' + solutionname
@@ -81,3 +79,136 @@ for file_name in file_names:
   file_client = directory_client.get_file_client(file_name)
   with open(file=file_name, mode="rb") as data:
     file_client.upload_data(data, overwrite=True)
+
+#get environments
+try:
+  fabric_env_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/environments/"
+  env_res = requests.get(fabric_env_url, headers=fabric_headers)
+  env_res_id = env_res.json()['value'][0]['id']
+  # print(env_res.json())
+except:
+  env_res_id = ''
+
+#create notebook items
+notebook_names =['00_process_json_files','03_create_calendar_data']
+# notebook_names =['process_data_new']
+
+for notebook_name in notebook_names:
+
+    with open('../Code/'+ notebook_name +'.ipynb', 'r') as f:
+        notebook_json = json.load(f)
+
+    # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
+    # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
+    # notebook_json['metadata']['trident']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
+
+    notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
+    notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
+    notebook_json['metadata']['dependencies']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
+
+    if env_res_id != '':
+        notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
+        notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
+        
+    # try:
+    #     if env_res_id != '':
+    #         notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
+    #         notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
+    # except:
+    #     pass
+    notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
+
+    notebook_data = {
+        "displayName":notebook_name,
+        "type":"Notebook",
+        "definition" : {
+            "format": "ipynb",
+            "parts": [
+                {
+                    "path": "notebook-content.ipynb",
+                    "payload": notebook_base64.decode('utf-8'),
+                    "payloadType": "InlineBase64"
+                }
+            ]
+        }
+    }
+    fabric_response = requests.post(fabric_items_url, headers=fabric_headers, json=notebook_data)
+    #print(fabric_response.json())
+
+# get wrapper notebook id
+fabric_notebooks_url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/notebooks"
+notebooks_res = requests.get(fabric_notebooks_url, headers=fabric_headers)
+notebooks_res.json()
+
+pipeline_notebook_id = ''
+for n in notebooks_res.json().values():
+    for notebook in n:
+        if notebook['displayName'] == pipeline_notebook_name:
+            pipeline_notebook_id = notebook['id']
+            break
+print(pipeline_notebook_id)  
+
+
+# create pipeline item
+pipeline_json = {
+    "name": pipeline_name,
+    "properties": {
+        "activities": [
+            {
+                "name": "process_data",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": "0",
+                    "retryIntervalInSeconds": "30",
+                    "secureOutput": "false",
+                    "secureInput": "false"
+                },
+                "typeProperties": {
+                    "notebookId": pipeline_notebook_id,
+                    "workspaceId": workspaceId,
+                    "parameters": {
+                        "input_scenario": {
+                            "value": {
+                                "value": "@pipeline().parameters.input_scenario",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "input_scenario": {
+                "type": "string",
+                "defaultValue": "fsi"
+            }
+        }
+    }
+}
+
+pipeline_base64 = base64.b64encode(json.dumps(pipeline_json).encode('utf-8'))
+
+pipeline_data = {
+        "displayName":pipeline_name,
+        "type":"DataPipeline",
+        "definition" : {
+            # "format": "json",
+            "parts": [
+                {
+                    "path": "pipeline-content.json",
+                    "payload": pipeline_base64.decode('utf-8'),
+                    "payloadType": "InlineBase64"
+                }
+            ]
+        }
+    }
+
+pipeline_response = requests.post(fabric_items_url, headers=fabric_headers, json=pipeline_data)
+pipeline_response.json()
+
+# run the pipeline once
+job_url = fabric_base_url + f"items/{pipeline_response.json()['id']}/jobs/instances?jobType=Pipeline"
+job_response = requests.post(job_url, headers=fabric_headers)    
