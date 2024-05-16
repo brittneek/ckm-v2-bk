@@ -110,12 +110,7 @@ for notebook_name in notebook_names:
         notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
         notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
         
-    # try:
-    #     if env_res_id != '':
-    #         notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
-    #         notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
-    # except:
-    #     pass
+
     notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
 
     notebook_data = {
@@ -160,32 +155,32 @@ pipeline_json = {
                 "dependsOn": [],
                 "policy": {
                     "timeout": "0.12:00:00",
-                    "retry": "0",
-                    "retryIntervalInSeconds": "30",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
                     "secureOutput": "false",
                     "secureInput": "false"
                 },
                 "typeProperties": {
                     "notebookId": pipeline_notebook_id,
                     "workspaceId": workspaceId,
-                    "parameters": {
-                        "input_scenario": {
-                            "value": {
-                                "value": "@pipeline().parameters.input_scenario",
-                                "type": "Expression"
-                            },
-                            "type": "string"
-                        }
-                    }
+                    # "parameters": {
+                    #     "input_scenario": {
+                    #         "value": {
+                    #             "value": "@pipeline().parameters.input_scenario",
+                    #             "type": "Expression"
+                    #         },
+                    #         "type": "string"
+                    #     }
+                    # }
                 }
             }
         ],
-        "parameters": {
-            "input_scenario": {
-                "type": "string",
-                "defaultValue": "fsi"
-            }
-        }
+        # "parameters": {
+        #     "input_scenario": {
+        #         "type": "string",
+        #         "defaultValue": "fsi"
+        #     }
+        # }
     }
 }
 
