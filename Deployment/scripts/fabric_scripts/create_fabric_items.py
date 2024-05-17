@@ -45,8 +45,8 @@ fabric_create_workspace_url = f"https://api.fabric.microsoft.com/v1/workspaces"
 
 #get workspace name
 ws_res = requests.get(fabric_base_url, headers=fabric_headers)
-print("wes_res")
-print(wes_res)
+print("ws_res")
+print(ws_res)
 workspace_name = ws_res.json()['displayName']
 
 #create lakehouse
