@@ -92,7 +92,7 @@ except:
   env_res_id = ''
 
 #create notebook items
-notebook_names =['00_process_json_files','03_create_calendar_data','pipeline_notebook']
+notebook_names =['00_process_json_files','01_process_audio_files', '02_enrich_data','03_create_calendar_data', '04_generate_and_multiple_data', 'pipeline_notebook']
 # notebook_names =['process_data_new']
 
 for notebook_name in notebook_names:
