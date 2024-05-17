@@ -108,7 +108,7 @@ for notebook_name in notebook_names:
     print(lakehouse_res)
     print(lakehouse_res.json())
 
-    notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
+    notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
     notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
     notebook_json['metadata']['dependencies']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
 
