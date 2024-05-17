@@ -109,8 +109,11 @@ for notebook_name in notebook_names:
     notebook_json['metadata']['dependencies']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
 
     if env_res_id != '':
-        notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
-        notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
+        try:
+            notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
+            notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
+        except:
+            pass
         
 
     notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
