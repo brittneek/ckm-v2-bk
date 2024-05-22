@@ -41,16 +41,6 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-
-// resource roleAssignmentKeyVaultAdmin 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, managedIdentity.id, keyVaultAdminRoleDefinition.id)
-//   properties: {
-//     principalId: managedIdentity.properties.principalId
-//     roleDefinitionId: keyVaultAdminRoleDefinition.id
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
 // @description('Array of actions for the roleDefinition')
 // param actions array = [
 //   'Microsoft.Synapse/workspaces/write'
