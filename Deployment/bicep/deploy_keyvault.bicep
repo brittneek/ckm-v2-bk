@@ -217,7 +217,7 @@ resource azureOpenAIApiKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-pr
 
 resource azureOpenAIApiVersionEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
-  name: 'AZURE-OPENAI-PREVIEW-API-VERSION'
+  name: 'AZURE-OPENAI-VERSION'
   properties: {
     value: azureOpenAIApiVersion
   }
