@@ -11,6 +11,7 @@ from azure.mgmt.authorization.models import RoleAssignmentCreateParameters
 from azure.mgmt.authorization import AuthorizationManagementClient
 from azure.mgmt.resource.subscriptions import SubscriptionClient
 import uuid
+import subprocess
 
 # credential = DefaultAzureCredential()
 from azure.identity import AzureCliCredential
@@ -38,13 +39,27 @@ subscription_id = selected_subscription.subscription_id
 auth_client = AuthorizationManagementClient(credential, subscription_id)
 
 
-# Get tenant ID and principal ID (user ID)
-# This requires Azure CLI to be logged in with `az login`
-from azure.identity._credentials.azure_cli import _run_command
-_, output, _ = _run_command("az account show")
-import json
-account_info = json.loads(output)
-principal_id = account_info['user']['name']
+def get_azure_principal_id():
+    """Run the Azure CLI command to get the currently logged-in principal ID."""
+    command = "az account show --query user.name -o json"
+    try:
+        # Execute the Azure CLI command
+        result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Parse the output to JSON
+        principal_id = json.loads(result.stdout)
+        return principal_id
+    except subprocess.CalledProcessError as e:
+        print("Failed to execute command:", e)
+        print("Error output:", e.stderr)
+        return None
+
+# Usage of the function
+principal_id = get_azure_principal_id()
+if principal_id:
+    print("Principal ID:")
+else:
+    print("Could not retrieve Principal ID.")
+
 
 # Role details
 role_definition_id = '/subscriptions/{}/providers/Microsoft.Authorization/roleDefinitions/{}'.format(subscription_id, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
