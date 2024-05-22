@@ -24,6 +24,8 @@ pipeline_notebook_name = 'pipeline_notebook'
 pipeline_name = 'data_pipeline'
 lakehouse_name = 'lakehouse_' + solutionname
 
+print("workspace id: " ,workspaceId)
+
 if create_workspace == True:
   workspace_name = 'nc_workspace_' + solutionname
 
