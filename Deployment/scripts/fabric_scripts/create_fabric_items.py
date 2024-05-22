@@ -57,6 +57,9 @@ def get_azure_principal_id():
         object_id_result = subprocess.check_output(user_show_cmd, shell=True, text=True)
         object_id = json.loads(object_id_result).strip()
         
+        print('object_id_result: ', object_id_result)
+        print('objectid: ', object_id)
+        
         return object_id
     except subprocess.CalledProcessError as e:
         print(f"An error occurred: {e}")
@@ -76,6 +79,7 @@ else:
 # Role details
 role_definition_id = '/subscriptions/{}/providers/Microsoft.Authorization/roleDefinitions/{}'.format(subscription_id, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
 scope = '/subscriptions/{}'.format(subscription_id)
+
 
 # Create role assignment
 role_assignment_params = RoleAssignmentCreateParameters(
