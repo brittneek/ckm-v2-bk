@@ -43,22 +43,26 @@ auth_client = AuthorizationManagementClient(credential, subscription_id)
 def get_azure_principal_id():
     """Run the Azure CLI command to get the currently logged-in principal's GUID."""
     # Adjusted command to fetch the object ID of the user
-    command = "az account show --query user.objectId -o json"
+    command = "az account show --query user.name -o json"
     try:
-        # Execute the Azure CLI command
-        result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print("result : ", result)
-        # Parse the output to JSON
-        print("Raw output:", result.stdout)
-        principal_id = json.loads(result.stdout)
-        # if not principal_id:  # Check if the user is a service principal
-        #     command = "az account show --query servicePrincipalId -o json"
-        #     result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #     principal_id = json.loads(result.stdout)
-        return principal_id
+       # Execute the command to get the user's name
+        user_name_result = subprocess.check_output(account_show_cmd, shell=True, text=True)
+        user_name = json.loads(user_name_result).strip()
+        print("username: ", user_name)
+        
+        # Command to get the user's objectId using the user's name in JSON format
+        user_show_cmd = f"az ad user show --id {user_name} --query objectId -o json"
+        
+        # Execute the command to get the objectId
+        object_id_result = subprocess.check_output(user_show_cmd, shell=True, text=True)
+        object_id = json.loads(object_id_result).strip()
+        
+        return object_id
     except subprocess.CalledProcessError as e:
-        print("Failed to execute command:", e)
-        print("Error output:", e.stderr)
+        print(f"An error occurred: {e}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"JSON parsing error: {e}")
         return None
 
 # Usage of the function
