@@ -6,9 +6,65 @@ import pandas as pd
 import os
 from glob import iglob
 
+from azure.mgmt.resource.subscriptions import SubscriptionClient
+from azure.mgmt.authorization.models import RoleAssignmentCreateParameters
+from azure.mgmt.authorization import AuthorizationManagementClient
+from azure.mgmt.resource.subscriptions import SubscriptionClient
+import uuid
+
 # credential = DefaultAzureCredential()
 from azure.identity import AzureCliCredential
 credential = AzureCliCredential()
+
+# Initialize the Subscription Client
+subscription_client = SubscriptionClient(credential)
+
+print("subscriptions")
+subscriptions = list(subscription_client.subscriptions.list())
+
+for sub in subscriptions:
+    print(f"Subscription ID: {sub.subscription_id}, Subscription Name: {sub.display_name}")
+    
+# For simplicity, we just select the first subscription
+selected_subscription = subscriptions[0] if subscriptions else None
+
+if selected_subscription:
+    print("Using Subscription ID:", selected_subscription.subscription_id)
+else:
+    print("No subscriptions available.")
+
+subscription_id = selected_subscription.subscription_id
+
+auth_client = AuthorizationManagementClient(credential, subscription_id)
+
+
+# Get tenant ID and principal ID (user ID)
+# This requires Azure CLI to be logged in with `az login`
+from azure.identity._credentials.azure_cli import _run_command
+_, output, _ = _run_command("az account show")
+import json
+account_info = json.loads(output)
+principal_id = account_info['user']['name']
+
+# Role details
+role_definition_id = '/subscriptions/{}/providers/Microsoft.Authorization/roleDefinitions/{}'.format(subscription_id, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
+scope = '/subscriptions/{}'.format(subscription_id) 
+
+# Create role assignment
+role_assignment_params = RoleAssignmentCreateParameters(
+    role_definition_id=role_definition_id,
+    principal_id=principal_id
+)
+
+role_assignment = auth_client.role_assignments.create(
+    scope=scope,
+    role_assignment_name=str(uuid.uuid4()),  # Generate a unique UUID for the role assignment
+    parameters=role_assignment_params
+)
+
+print("Role Assignment created:", role_assignment)
+
+
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
