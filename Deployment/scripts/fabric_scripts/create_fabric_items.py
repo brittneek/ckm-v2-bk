@@ -240,6 +240,7 @@ pipeline_notebook_id = ''
 print("notebook_res.json.values: ", notebooks_res.json().values())
 for n in notebooks_res.json().values():
     for notebook in n:
+        print("notebook displayname", notebook['displayName'])
         if notebook['displayName'] == pipeline_notebook_name:
             pipeline_notebook_id = notebook['id']
             break
