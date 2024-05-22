@@ -1,4 +1,4 @@
-from azure.identity import DefaultAzureCredential 
+from azure.identity import DefaultAzureCredential
 import base64
 import json
 import requests
@@ -25,7 +25,7 @@ subscriptions = list(subscription_client.subscriptions.list())
 
 for sub in subscriptions:
     print(f"Subscription ID: {sub.subscription_id}, Subscription Name: {sub.display_name}")
-    
+
 # For simplicity, we just select the first subscription
 selected_subscription = subscriptions[0] if subscriptions else None
 
@@ -49,11 +49,12 @@ def get_azure_principal_id():
         result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print("result : ", result)
         # Parse the output to JSON
+        print("Raw output:", result.stdout)
         principal_id = json.loads(result.stdout)
-        if not principal_id:  # Check if the user is a service principal
-            command = "az account show --query servicePrincipalId -o json"
-            result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            principal_id = json.loads(result.stdout)
+        # if not principal_id:  # Check if the user is a service principal
+        #     command = "az account show --query servicePrincipalId -o json"
+        #     result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        #     principal_id = json.loads(result.stdout)
         return principal_id
     except subprocess.CalledProcessError as e:
         print("Failed to execute command:", e)
@@ -70,7 +71,7 @@ else:
 
 # Role details
 role_definition_id = '/subscriptions/{}/providers/Microsoft.Authorization/roleDefinitions/{}'.format(subscription_id, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
-scope = '/subscriptions/{}'.format(subscription_id) 
+scope = '/subscriptions/{}'.format(subscription_id)
 
 # Create role assignment
 role_assignment_params = RoleAssignmentCreateParameters(
@@ -186,7 +187,7 @@ for notebook_name in notebook_names:
     # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
     # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
     # notebook_json['metadata']['trident']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
-    
+
     print("lakehouse_res")
     print(lakehouse_res)
     print(lakehouse_res.json())
@@ -201,7 +202,7 @@ for notebook_name in notebook_names:
             notebook_json['metadata']['dependencies']['environment']['workspaceId'] = lakehouse_res.json()['workspaceId']
         except:
             pass
-        
+
 
     notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
 
@@ -233,7 +234,7 @@ for n in notebooks_res.json().values():
         if notebook['displayName'] == pipeline_notebook_name:
             pipeline_notebook_id = notebook['id']
             break
-print(pipeline_notebook_id)  
+print(pipeline_notebook_id)
 
 
 # create pipeline item
@@ -298,4 +299,4 @@ pipeline_response.json()
 
 # run the pipeline once
 job_url = fabric_base_url + f"items/{pipeline_response.json()['id']}/jobs/instances?jobType=Pipeline"
-job_response = requests.post(job_url, headers=fabric_headers)    
+job_response = requests.post(job_url, headers=fabric_headers)
