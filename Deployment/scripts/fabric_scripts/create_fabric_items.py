@@ -50,8 +50,8 @@ def get_azure_principal_id():
         user_name = json.loads(user_name_result).strip()
         print("username: ", user_name)
         
-        # Command to get the user's objectId using the user's name in JSON format
-        user_show_cmd = f"az ad user show --id {user_name} --query objectId -o json"
+        # Command to get the user's id using the user's name in JSON format
+        user_show_cmd = f"az ad user show --id {user_name} --query id -o json"
         print('user_show_cmd', user_show_cmd)
         
         # Execute the command to get the objectId
