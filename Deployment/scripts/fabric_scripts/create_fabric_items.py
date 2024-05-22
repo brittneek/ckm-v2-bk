@@ -52,6 +52,7 @@ def get_azure_principal_id():
         
         # Command to get the user's objectId using the user's name in JSON format
         user_show_cmd = f"az ad user show --id {user_name} --query objectId -o json"
+        print('user_show_cmd', user_show_cmd)
         
         # Execute the command to get the objectId
         object_id_result = subprocess.check_output(user_show_cmd, shell=True, text=True)
