@@ -237,12 +237,13 @@ notebooks_res = requests.get(fabric_notebooks_url, headers=fabric_headers)
 notebooks_res.json()
 
 pipeline_notebook_id = ''
+print("notebook_res.json.values: ", notebooks_res.json().values())
 for n in notebooks_res.json().values():
     for notebook in n:
         if notebook['displayName'] == pipeline_notebook_name:
             pipeline_notebook_id = notebook['id']
             break
-print(pipeline_notebook_id)
+print("pipeline_notebook_id: ", pipeline_notebook_id)
 
 
 # create pipeline item
