@@ -47,6 +47,7 @@ def get_azure_principal_id():
     try:
         # Execute the Azure CLI command
         result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("result : ", result)
         # Parse the output to JSON
         principal_id = json.loads(result.stdout)
         if not principal_id:  # Check if the user is a service principal
