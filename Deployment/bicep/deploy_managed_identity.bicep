@@ -27,12 +27,27 @@ resource ownerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01
   name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
 
+resource keyVaultAdminRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: resourceGroup()
+  name: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
+}
+
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, managedIdentity.id, ownerRoleDefinition.id)
   properties: {
     principalId: managedIdentity.properties.principalId
     roleDefinitionId:  ownerRoleDefinition.id
     principalType: 'ServicePrincipal' 
+  }
+}
+
+
+resource roleAssignmentKeyVaultAdmin 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentity.id, keyVaultAdminRoleDefinition.id)
+  properties: {
+    principalId: managedIdentity.properties.principalId
+    roleDefinitionId: keyVaultAdminRoleDefinition.id
+    principalType: 'ServicePrincipal'
   }
 }
 
