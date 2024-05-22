@@ -39,14 +39,20 @@ subscription_id = selected_subscription.subscription_id
 auth_client = AuthorizationManagementClient(credential, subscription_id)
 
 
+
 def get_azure_principal_id():
-    """Run the Azure CLI command to get the currently logged-in principal ID."""
-    command = "az account show --query user.name -o json"
+    """Run the Azure CLI command to get the currently logged-in principal's GUID."""
+    # Adjusted command to fetch the object ID of the user
+    command = "az account show --query user.objectId -o json"
     try:
         # Execute the Azure CLI command
         result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # Parse the output to JSON
         principal_id = json.loads(result.stdout)
+        if not principal_id:  # Check if the user is a service principal
+            command = "az account show --query servicePrincipalId -o json"
+            result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            principal_id = json.loads(result.stdout)
         return principal_id
     except subprocess.CalledProcessError as e:
         print("Failed to execute command:", e)
@@ -56,7 +62,7 @@ def get_azure_principal_id():
 # Usage of the function
 principal_id = get_azure_principal_id()
 if principal_id:
-    print("Principal ID:")
+    print("Principal ID:", principal_id)
 else:
     print("Could not retrieve Principal ID.")
 
