@@ -58,6 +58,8 @@ lakehouse_data = {
 }
 lakehouse_res = requests.post(fabric_items_url, headers=fabric_headers, json=lakehouse_data)
 
+print("lakehouse res: ", lakehouse_res)
+
 # copy local files to lakehouse
 from azure.storage.filedatalake import (
     DataLakeServiceClient,
