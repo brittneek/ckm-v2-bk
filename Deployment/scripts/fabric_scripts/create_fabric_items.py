@@ -46,7 +46,7 @@ def get_azure_principal_id():
     command = "az account show --query user.name -o json"
     try:
        # Execute the command to get the user's name
-        user_name_result = subprocess.check_output(account_show_cmd, shell=True, text=True)
+        user_name_result = subprocess.check_output(command, shell=True, text=True)
         user_name = json.loads(user_name_result).strip()
         print("username: ", user_name)
         
