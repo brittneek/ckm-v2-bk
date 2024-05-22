@@ -55,9 +55,8 @@ def get_azure_principal_id():
         
         # Execute the command to get the objectId
         object_id_result = subprocess.check_output(user_show_cmd, shell=True, text=True)
-        object_id = json.loads(object_id_result).strip()
-        
         print('object_id_result: ', object_id_result)
+        object_id = json.loads(object_id_result).strip()
         print('objectid: ', object_id)
         
         return object_id
