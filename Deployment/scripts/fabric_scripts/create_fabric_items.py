@@ -112,7 +112,7 @@ for notebook_name in notebook_names:
     print(lakehouse_res.json())
     
     # add sleep timer
-    time.sleep(120)  # 1 minute
+    time.sleep(60)  # 1 minute
     
     
     try:

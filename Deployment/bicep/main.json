@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "14449004786260373086"
+      "templateHash": "17680238839185683741"
     }
   },
   "parameters": {
@@ -229,7 +229,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.27.1.19265",
-              "templateHash": "16937115612584218241"
+              "templateHash": "8583233733302628155"
             }
           },
           "parameters": {
@@ -272,7 +272,7 @@
             {
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}', parameters('accounts_ckm_openai_name'), 'gpt-35-turbo-16k')]",
+              "name": "[format('{0}/{1}', parameters('accounts_ckm_openai_name'), 'gpt-4')]",
               "sku": {
                 "name": "Standard",
                 "capacity": 30
@@ -280,8 +280,8 @@
               "properties": {
                 "model": {
                   "format": "OpenAI",
-                  "name": "gpt-35-turbo-16k",
-                  "version": "0613"
+                  "name": "gpt-4",
+                  "version": "0125-Preview"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
                 "raiPolicyName": "Microsoft.Default"
