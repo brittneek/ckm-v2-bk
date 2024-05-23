@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import os
 from glob import iglob
+import time
 
 
 # credential = DefaultAzureCredential()
