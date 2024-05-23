@@ -6,96 +6,10 @@ import pandas as pd
 import os
 from glob import iglob
 
-# from azure.mgmt.resource.subscriptions import SubscriptionClient
-# from azure.mgmt.authorization.models import RoleAssignmentCreateParameters
-# from azure.mgmt.authorization import AuthorizationManagementClient
-# from azure.mgmt.resource.subscriptions import SubscriptionClient
-# import uuid
-# import subprocess
 
 # credential = DefaultAzureCredential()
 from azure.identity import AzureCliCredential
 credential = AzureCliCredential()
-
-# # Initialize the Subscription Client
-# subscription_client = SubscriptionClient(credential)
-
-# print("subscriptions")
-# subscriptions = list(subscription_client.subscriptions.list())
-
-# for sub in subscriptions:
-#     print(f"Subscription ID: {sub.subscription_id}, Subscription Name: {sub.display_name}")
-
-# # For simplicity, we just select the first subscription
-# selected_subscription = subscriptions[0] if subscriptions else None
-
-# if selected_subscription:
-#     print("Using Subscription ID:", selected_subscription.subscription_id)
-# else:
-#     print("No subscriptions available.")
-
-# subscription_id = selected_subscription.subscription_id
-
-# auth_client = AuthorizationManagementClient(credential, subscription_id)
-
-
-
-# def get_azure_principal_id():
-#     """Run the Azure CLI command to get the currently logged-in principal's GUID."""
-#     # Adjusted command to fetch the object ID of the user
-#     command = "az account show --query user.name -o json"
-#     try:
-#        # Execute the command to get the user's name
-#         user_name_result = subprocess.check_output(command, shell=True, text=True)
-#         user_name = json.loads(user_name_result).strip()
-#         print("username: ", user_name)
-        
-#         # Command to get the user's id using the user's name in JSON format
-#         user_show_cmd = f"az ad user show --id {user_name} --query id -o json"
-#         print('user_show_cmd', user_show_cmd)
-        
-#         # Execute the command to get the objectId
-#         object_id_result = subprocess.check_output(user_show_cmd, shell=True, text=True)
-#         print('object_id_result: ', object_id_result)
-#         object_id = json.loads(object_id_result).strip()
-#         print('objectid: ', object_id)
-        
-#         return object_id
-#     except subprocess.CalledProcessError as e:
-#         print(f"An error occurred: {e}")
-#         return None
-#     except json.JSONDecodeError as e:
-#         print(f"JSON parsing error: {e}")
-#         return None
-
-# # Usage of the function
-# principal_id = get_azure_principal_id()
-# if principal_id:
-#     print("Principal ID:", principal_id)
-# else:
-#     print("Could not retrieve Principal ID.")
-
-
-# # Role details
-# role_definition_id = '/subscriptions/{}/providers/Microsoft.Authorization/roleDefinitions/{}'.format(subscription_id, '00482a5a-887f-4fb3-b363-3b7fe8e74483')
-# scope = '/subscriptions/{}'.format(subscription_id)
-
-
-# # Create role assignment
-# role_assignment_params = RoleAssignmentCreateParameters(
-#     role_definition_id=role_definition_id,
-#     principal_id=principal_id
-# )
-
-# role_assignment = auth_client.role_assignments.create(
-#     scope=scope,
-#     role_assignment_name=str(uuid.uuid4()),  # Generate a unique UUID for the role assignment
-#     parameters=role_assignment_params
-# )
-
-# print("Role Assignment created:", role_assignment)
-
-
 
 cred = credential.get_token('https://api.fabric.microsoft.com/.default')
 token = cred.token
@@ -192,21 +106,21 @@ for notebook_name in notebook_names:
     with open('notebooks/'+ notebook_name +'.ipynb', 'r') as f:
         notebook_json = json.load(f)
 
-    # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
-    # notebook_json['metadata']['trident']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
-    # notebook_json['metadata']['trident']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
-    
-    # add sleep timer
-    time.sleep(60)  # 1 minute
-
     print("lakehouse_res")
     print(lakehouse_res)
     print(lakehouse_res.json())
-
-    notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
-    notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
-    notebook_json['metadata']['dependencies']['lakehouse']['workspaceId'] = lakehouse_res.json()['workspaceId']
-
+    
+    # add sleep timer
+    time.sleep(120)  # 1 minute
+    
+    
+    try:
+        notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse'] = lakehouse_res.json()['id']
+        notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse_name'] = lakehouse_res.json()['displayName']
+        notebook_json['metadata']['dependencies']['lakehouse']['default_lakehouse_workspace_id'] = lakehouse_res.json()['workspaceId']
+    except:
+        pass
+    
     if env_res_id != '':
         try:
             notebook_json['metadata']['dependencies']['environment']['environmentId'] = env_res_id
