@@ -134,9 +134,6 @@ for notebook_name in notebook_names:
 
     notebook_base64 = base64.b64encode(json.dumps(notebook_json).encode('utf-8'))
     
-    # add sleep timer
-    time.sleep(120)  # 1 minute
-
     notebook_data = {
         "displayName":notebook_name,
         "type":"Notebook",
@@ -151,6 +148,8 @@ for notebook_name in notebook_names:
             ]
         }
     }
+    
+    time.sleep(120)
     fabric_response = requests.post(fabric_items_url, headers=fabric_headers, json=notebook_data)
     #print(fabric_response.json())
 
