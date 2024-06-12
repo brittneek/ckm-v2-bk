@@ -8,7 +8,7 @@ solutionName="$3"
 
 # get signed user
 echo "Getting signed in user id"
-signed_user_id=$(az ad signed-in-user show --query id)
+signed_user_id=$(az ad signed-in-user show --query id -o tsv)
 echo "User Id: $signed_user_id"
 
 # Check if the user_id is empty
@@ -18,7 +18,7 @@ if [ -z "$signed_user_id" ]; then
 fi
 
 # Define the scope for the Key Vault (replace with your Key Vault resource ID)
-key_vault_resource_id=$(az keyvault show --name $keyvaultName --query id)
+key_vault_resource_id=$(az keyvault show --name $keyvaultName --query id --output tsv)
 
 # Check if the key_vault_resource_id is empty
 if [ -z "$key_vault_resource_id" ]; then
